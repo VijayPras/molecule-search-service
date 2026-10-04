@@ -1,8 +1,11 @@
 package com.moleculesearch.service;
 
+import org.openscience.cdk.aromaticity.Aromaticity;
+import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.fingerprint.CircularFingerprinter;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -18,23 +21,28 @@ import java.util.BitSet;
  * NOTE ON THIS FIRST DRAFT: this sandbox could not reach Maven Central to
  * compile-test this class against the real cdk-bundle jar. The CDK API
  * calls below (SmilesParser, AtomContainerManipulator,
- * CircularFingerprinter) are correct as of CDK 2.x from documentation, but
- * if `mvn -f backend/pom.xml compile` reports an error in THIS file
- * specifically, it is almost certainly a method name drift between CDK
- * versions — paste the error back and it's a quick fix.
+ * CircularFingerprinter, Aromaticity) are correct as of CDK 2.x from
+ * documentation, but if `mvn -f backend/pom.xml compile` reports an error
+ * in THIS file specifically, it is almost certainly a method name drift
+ * between CDK versions — paste the error back and it's a quick fix.
  */
 @Service
 public class FingerprintService {
 
     private final SmilesParser smilesParser = new SmilesParser(SilentChemObjectBuilder.getInstance());
 
+    /** CDK's standard electron-donation model + exhaustive ring search — needed so lowercase ("aromatic") SMARTS atoms match correctly. */
+    private final Aromaticity aromaticity = new Aromaticity(ElectronDonation.cdk(), Cycles.all());
+
     /**
-     * Parses a SMILES string into a CDK molecule and configures atom types —
-     * required before fingerprinting will produce meaningful bits.
+     * Parses a SMILES string into a CDK molecule, configures atom types, and
+     * perceives aromaticity. All three are required before fingerprinting or
+     * substructure (SMARTS) matching will behave correctly.
      */
     public IAtomContainer parseSmiles(String smiles) throws CDKException {
         IAtomContainer mol = smilesParser.parseSmiles(smiles);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol); // "percieve" is CDK's (misspelled) method name
+        aromaticity.apply(mol);
         return mol;
     }
 

@@ -2,6 +2,9 @@ package com.moleculesearch.controller;
 
 import com.moleculesearch.dto.MoleculeResult;
 import com.moleculesearch.dto.SimilarityRequest;
+import com.moleculesearch.dto.SubstructureRequest;
+import com.moleculesearch.dto.SubstructureResult;
+import com.moleculesearch.entity.Molecule;
 import com.moleculesearch.service.MoleculeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,6 +49,26 @@ public class MoleculeController {
                     "details", String.valueOf(e.getMessage())
             ));
         }
+    }
+
+    @PostMapping("/search/substructure")
+    public ResponseEntity<?> searchSubstructure(@RequestBody SubstructureRequest request) {
+        try {
+            List<SubstructureResult> results = moleculeService.findBySubstructure(request.smarts())
+                    .stream()
+                    .map(this::toSubstructureResult)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Could not process SMARTS: " + request.smarts(),
+                    "details", String.valueOf(e.getMessage())
+            ));
+        }
+    }
+
+    private SubstructureResult toSubstructureResult(Molecule m) {
+        return new SubstructureResult(m.getId(), m.getCanonicalSmiles(), m.getCompoundName(), m.getMolecularWeight());
     }
 
     @GetMapping("/stats")

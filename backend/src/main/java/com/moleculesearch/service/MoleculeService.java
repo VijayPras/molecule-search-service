@@ -4,6 +4,7 @@ import com.moleculesearch.entity.Molecule;
 import com.moleculesearch.repository.MoleculeRepository;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.isomorphism.Pattern;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -19,10 +20,14 @@ public class MoleculeService {
 
     private final MoleculeRepository moleculeRepository;
     private final FingerprintService fingerprintService;
+    private final SubstructureService substructureService;
 
-    public MoleculeService(MoleculeRepository moleculeRepository, FingerprintService fingerprintService) {
+    public MoleculeService(MoleculeRepository moleculeRepository,
+                            FingerprintService fingerprintService,
+                            SubstructureService substructureService) {
         this.moleculeRepository = moleculeRepository;
         this.fingerprintService = fingerprintService;
+        this.substructureService = substructureService;
     }
 
     /**
@@ -100,6 +105,35 @@ public class MoleculeService {
                 .filter(match -> match.score() >= threshold)
                 .sorted(Comparator.comparingDouble(SimilarityMatch::score).reversed())
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Naive O(n) scan: re-parses every stored molecule's SMILES and tests it
+     * against the compiled SMARTS pattern. There's no persisted structural
+     * index to check against (unlike similarity search, which compares
+     * pre-computed fingerprint bytes), so this is the most expensive
+     * endpoint in the service — expect it to be noticeably slower than
+     * similarity search even on this small dataset. See the Phase 3 notes
+     * on indexing if you outgrow this.
+     *
+     * Molecules that fail to re-parse are skipped rather than failing the
+     * whole search — a single bad row shouldn't take down every other result.
+     */
+    public List<Molecule> findBySubstructure(String smarts) throws CDKException {
+        Pattern pattern = substructureService.compile(smarts);
+
+        List<Molecule> matches = new ArrayList<>();
+        for (Molecule molecule : moleculeRepository.findAll()) {
+            try {
+                IAtomContainer mol = fingerprintService.parseSmiles(molecule.getCanonicalSmiles());
+                if (substructureService.matches(pattern, mol)) {
+                    matches.add(molecule);
+                }
+            } catch (Exception e) {
+                // skip molecules that fail to re-parse rather than aborting the whole search
+            }
+        }
+        return matches;
     }
 
     public long count() {
