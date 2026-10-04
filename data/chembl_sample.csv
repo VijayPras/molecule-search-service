@@ -1,0 +1,29 @@
+molecule_id,canonical_smiles,molecular_weight,compound_name,target
+1,CCO,46.07,ethanol,reference
+2,CC(=O)OC1=CC=CC=C1C(=O)O,180.16,aspirin,COX inhibitor
+3,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O,206.28,ibuprofen,COX inhibitor
+4,CN1C=NC2=C1C(=O)N(C(=O)N2C)C,194.19,caffeine,adenosine receptor
+5,CC(=O)NC1=CC=C(C=C1)O,151.16,paracetamol,COX inhibitor
+6,C1=CC=CC=C1,78.11,benzene,reference
+7,CC1=CC=CC=C1,92.14,toluene,reference
+8,C1=CC=C(C=C1)O,94.11,phenol,reference
+9,CC(=O)C,58.08,acetone,reference
+10,C1=CC=C(C(=C1)C(=O)O)O,138.12,salicylic acid,COX inhibitor
+11,CN1CCCC1C2=CN=CC=C2,162.23,nicotine,nicotinic receptor
+12,CO,32.04,methanol,reference
+13,CC(=O)O,60.05,acetic acid,reference
+14,C1=CC2=CC=CC=C2C=C1,128.17,naphthalene,reference
+15,C1=CC=NC=C1,79.10,pyridine,reference
+16,C1=CC=CO1,68.07,furan,reference
+17,C1=CC=CS1,84.14,thiophene,reference
+18,C=CC1=CC=CC=C1,104.15,styrene,reference
+19,C1CCCCC1,84.16,cyclohexane,reference
+20,C1=CC=C(C=C1)C(=O)O,122.12,benzoic acid,reference
+21,C1=CC=C(C=C1)Cl,112.56,chlorobenzene,reference
+22,C1=CC=C(C=C1)N,93.13,aniline,reference
+23,C1=CC(=C(C=C1CCN)O)O,153.18,dopamine,dopamine receptor
+24,CN(C)CCOC(C1=CC=CC=C1)C2=CC=CC=C2,255.36,diphenhydramine,histamine receptor
+25,C1=CC=C2C(=C1)C=CN2,117.15,indole,reference
+26,C1=CC2=CC=CC=C2N=C1,129.16,quinoline,reference
+27,COC1=CC(=CC=C1O)C=O,152.15,vanillin,reference
+28,C1=CC=C(C=C1)C=CC=O,132.16,cinnamaldehyde,reference

@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/molecules
+    username: molecules_user
+    password: molecules_password
+  jpa:
+    hibernate:
+      ddl-auto: update   # auto-creates/updates the molecules table from the entity
+    show-sql: false
+
+app:
+  chembl-data-path: /data/chembl_sample.csv
